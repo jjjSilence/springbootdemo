@@ -2,11 +2,15 @@ package com.example.springbootdemo.student;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
-@Table
+@Entity(name = "Student")
+@Table(name = "student",
+        uniqueConstraints = {@UniqueConstraint(
+                name = "student_email_unique",
+                columnNames = "email"
+        )})
 public class Student {
     @Id
     @SequenceGenerator(
@@ -18,33 +22,85 @@ public class Student {
             strategy = GenerationType.SEQUENCE,
             generator = "student_sequence"
     )
+    @Column(
+            name = "id",
+            updatable = false
+    )
     private Long id;
-    private String name;
-    private String email;
-    private LocalDate dob;
 
-    @Transient
+    @Column(
+            name = "first_name",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String firstName;
+
+    @Column(
+            name = "last_name",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String lastName;
+    @Column(
+            name = "email",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String email;
+    @Column(
+            name = "age",
+            nullable = false
+    )
     private Integer age;
+
+    @OneToOne(mappedBy = "student",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private StudentIdCard studentIdCard;
+
+    @OneToMany(mappedBy = "student",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.EAGER)
+    private List<Book> books = new ArrayList<>();
+
+
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+//    @JoinTable(
+//            name = "enrolment",
+//            joinColumns = @JoinColumn(
+//                    name = "student_id",
+//                    foreignKey = @ForeignKey(name = "enrolment_student_id_fk")
+//            ),
+//            inverseJoinColumns = @JoinColumn(
+//                    name = "course_id",
+//                    foreignKey = @ForeignKey(name = "enrolment_course_id_fk")
+//            )
+//    )
+//    private List<Course> courses = new ArrayList<>();
+
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            mappedBy = "student"
+    )
+    private List<Enrolment> enrolments = new ArrayList<>();
 
     public Student() {
     }
 
-    public Student(Long id, String name, String email, LocalDate dob) {
+    public Student(Long id, String firstName, String lastName, String email, Integer age) {
         this.id = id;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
-        this.dob = dob;
+        this.age = age;
     }
 
-    public Student(String name, String email, LocalDate dob) {
-        this.name = name;
+    public Student(String firstName, String lastName, String email, Integer age) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
-        this.dob = dob;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Student{id=%s,name=%s,dob=%s,age=%s}", id, name, dob, age);
+        this.age = age;
     }
 
     public Long getId() {
@@ -55,12 +111,20 @@ public class Student {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -71,19 +135,68 @@ public class Student {
         this.email = email;
     }
 
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
     public Integer getAge() {
-        return Period.between(this.dob, LocalDate.now()).getYears();
+        return age;
     }
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public void addBook(Book book) {
+        if (!this.books.contains(book)) {
+            this.books.add(book);
+            book.setStudent(this);
+        }
+    }
+
+    public void removeBook(Book book) {
+        if (!this.books.contains(book)) {
+            this.books.remove(book);
+            book.setStudent(null);
+        }
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setStudentIdCard(StudentIdCard studentIdCard) {
+        this.studentIdCard = studentIdCard;
+    }
+
+//    public void enrolToCourse(Course course) {
+//        this.courses.add(course);
+//        course.getStudent().add(this);
+//    }
+//
+//    public void unEnrolToCourse(Course course){
+//        this.courses.remove(course);
+//        course.getStudent().remove(this);
+//    }
+
+    public void addEnrolment(Enrolment enrolment) {
+        if (!this.enrolments.contains(enrolment)) {
+            this.enrolments.add(enrolment);
+        }
+    }
+
+    public void removeEnrolment(Enrolment enrolment) {
+        this.enrolments.remove(enrolment);
+    }
+
+    public List<Enrolment> getEnrolments() {
+        return enrolments;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", age=" + age +
+                '}';
     }
 }
