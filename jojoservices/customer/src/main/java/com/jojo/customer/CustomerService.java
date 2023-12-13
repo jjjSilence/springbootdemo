@@ -26,24 +26,24 @@ public class CustomerService {
         // todo: check if email not taken
         customerRepository.saveAndFlush(customer);
 
-        FraudCheckResponse fraudCheckResponse =
-                fraudClient.isFraudster(customer.getId());
-
-        if (fraudCheckResponse.isFraudster()) {
-            throw new IllegalStateException("fraudster");
-        }
-
-        NotificationRequest notificationRequest = new NotificationRequest(
-                customer.getId(),
-                customer.getEmail(),
-                String.format("Hi %s, welcome to Amigoscode...",
-                        customer.getFirstName())
-        );
-        rabbitMQMessageProducer.publish(
-                notificationRequest,
-                "internal.exchange",
-                "internal.notification.routing-key"
-        );
+//        FraudCheckResponse fraudCheckResponse =
+//                fraudClient.isFraudster(customer.getId());
+//
+//        if (fraudCheckResponse.isFraudster()) {
+//            throw new IllegalStateException("fraudster");
+//        }
+//
+//        NotificationRequest notificationRequest = new NotificationRequest(
+//                customer.getId(),
+//                customer.getEmail(),
+//                String.format("Hi %s, welcome to Amigoscode...",
+//                        customer.getFirstName())
+//        );
+//        rabbitMQMessageProducer.publish(
+//                notificationRequest,
+//                "internal.exchange",
+//                "internal.notification.routing-key"
+//        );
 
     }
 }
