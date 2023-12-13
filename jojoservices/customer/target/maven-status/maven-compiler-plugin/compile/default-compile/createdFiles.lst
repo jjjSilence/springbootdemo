@@ -1,0 +1,7 @@
+com/jojo/customer/Customer.class
+com/jojo/customer/Customer$CustomerBuilder.class
+com/jojo/customer/CustomerRegistrationRequest.class
+com/jojo/customer/CustomerController.class
+com/jojo/customer/CustomerApplication.class
+com/jojo/customer/CustomerRepository.class
+com/jojo/customer/CustomerService.class

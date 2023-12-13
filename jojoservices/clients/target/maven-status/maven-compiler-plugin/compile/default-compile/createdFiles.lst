@@ -1,0 +1,4 @@
+com/jojo/clients/fraud/FraudClient.class
+com/jojo/clients/fraud/FraudCheckResponse.class
+com/jojo/clients/notification/NotificationRequest.class
+com/jojo/clients/notification/NotificationClient.class
