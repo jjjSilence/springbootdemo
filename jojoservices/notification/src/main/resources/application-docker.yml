@@ -4,9 +4,9 @@ spring:
   application:
     name: notification
   datasource:
+    username: amigoscode
     password: password
     url: jdbc:postgresql://postgres:5432/notification
-    username: amigoscode
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -22,10 +22,10 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka
+      defaultZone: http://eurekaserver:8761/eureka
     fetch-registry: true
     register-with-eureka: true
-    enabled: false
+    enabled: true
 
 rabbitmq:
   exchanges:

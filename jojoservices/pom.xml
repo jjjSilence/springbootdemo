@@ -6,17 +6,22 @@
 
     <groupId>com.jojo</groupId>
     <artifactId>jojoservices</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
 
-    <name>jojoservices</name>
-    <url>https://www.jojo.com</url>
     <modules>
         <module>customer</module>
         <module>amqp</module>
-        <module>notifaction</module>
+        <module>notification</module>
         <module>clients</module>
+        <module>fraud</module>
+        <module>apigw</module>
+<!--        <module>eureka-server</module>-->
+        <module>eurekaserver</module>
     </modules>
+
+    <name>jojoservices</name>
+    <url>https://www.jojo.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,6 +30,7 @@
         <spring.boot.maven.plugin.version>2.5.7</spring.boot.maven.plugin.version>
         <spring.boot.dependencies.version>2.5.7</spring.boot.dependencies.version>
         <spring.cloud-version>2020.0.3</spring.cloud-version>
+        <image>jojo778/${project.artifactId}:${project.version}</image>
     </properties>
 
     <!--依赖管理，用于管理spring-cloud的依赖-->
@@ -51,10 +57,6 @@
     without them explicitly imported in  their pom.xml -->
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
@@ -77,8 +79,66 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.maven.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <!--如果不去掉该配置，repackage无法生效-->
+                    <!--控制Maven构建过程中是否跳过特定的插件执行，当设置<skip>true</skip>，相关插件的目标（goal）将不会被执行-->
+                    <!--                    <configuration>-->
+                    <!--                        <skip>true</skip>-->
+                    <!--                    </configuration>-->
+                </plugin>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>3.1.4</version>
+                    <configuration>
+                        <from>
+                            <image>
+                                eclipse-temurin:17@sha256:53b7b641066b6ad46cc97d9356317299eea9b9b0759f8a863b86de564c7672c4
+                            </image>
+                            <platforms>
+                                <platform>
+                                    <architecture>arm64</architecture>
+                                    <os>linux</os>
+                                </platform>
+                                <platform>
+                                    <architecture>amd64</architecture>
+                                    <os>linux</os>
+                                </platform>
+                            </platforms>
+                        </from>
+                        <to>
+                            <tags>
+                                <tag>latest</tag>
+                            </tags>
+                        </to>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
